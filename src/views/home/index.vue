@@ -2,14 +2,11 @@
   <div class="home-entry">
     <!-- container: 1240宽度，居中 -->
     <div class="container">
-      <!-- 左侧分类 -->
-      <HomeCategory />
-      <!-- 轮播图 -->
-      <HomeBanner />
-      <!-- 新鲜好物 -->
-      <HomeNew />
-      <!-- 人气推荐 -->
-      <HomeHot />
+      <HomeCategory />        <!--左侧分类 -->
+      <HomeBanner />          <!--轮播图 -->
+      <HomeNew />             <!--新鲜好物 -->
+      <HomeHot />             <!--人气推荐 -->
+      <HomeBrand />           <!--热门品牌-->
     </div>
   </div>
 </template>
@@ -19,9 +16,10 @@ import HomeCategory from './components/home-category'
 import HomeBanner from './components/home-banner'
 import HomeNew from './components/home-new'
 import HomeHot from './components/home-hot'
+import HomeBrand from './components/home-brand'
 export default {
   name: 'PageHome',
-  components: { HomeCategory, HomeBanner, HomeNew, HomeHot }
+  components: { HomeCategory, HomeBanner, HomeNew, HomeHot, HomeBrand }
 
 }
 </script>
