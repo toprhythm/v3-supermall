@@ -1,0 +1,63 @@
+<template>
+  <div class="home-entry">
+    <!-- container: 1240宽度，居中 -->
+    <div class="container">
+      <!-- 左侧分类 -->
+      <HomeCategory />
+      <!-- 轮播图 -->
+      <HomeBanner />
+      <!-- 新鲜好物 -->
+      <HomeNew />
+      <!-- 人气推荐 -->
+      <HomeHot />
+    </div>
+  </div>
+</template>
+
+<script>
+import HomeCategory from './components/home-category'
+import HomeBanner from './components/home-banner'
+import HomeNew from './components/home-new'
+import HomeHot from './components/home-hot'
+export default {
+  name: 'PageHome',
+  components: { HomeCategory, HomeBanner, HomeNew, HomeHot }
+
+}
+</script>
+
+<style lang="less">
+// .container {
+//   .hoverShadow();
+//   color: @xtxColor;
+// }
+//测试用的高度
+// .testHeight {
+//   height: 1500px;
+// }
+.home-category {
+  width: 250px;
+  height: 500px;
+  background: rgba(0,0,0,0.8);
+  position: relative;
+  z-index: 99;
+  .menu {
+    li {
+      padding-left: 40px;
+      height: 50px;
+      line-height: 50px;
+      &:hover {
+        background: @xtxColor;
+      }
+      a {
+        margin-right: 4px;
+        color: #fff;
+        &:first-child {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+</style>

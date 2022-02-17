@@ -1,0 +1,28 @@
+// 鼠标经过上移阴影动画
+.hoverShadow () {
+  transition: all .5s;
+  &:hover {
+    transform: translate3d(0,-3px,0);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  }
+}
+
+/*   //既生成.w100h100也生成.box，会生成冗余代码
+  .w100h100 {
+    width: 100px;
+    height: 100px;
+  }
+
+  .box {
+    .w100h100();
+  }
+
+  //只会生成.box2，不会生成冗余代码
+  .w200h200 (@width) {
+    width: @width;
+    height: 200px;
+  }
+
+  .box2 {
+    .w200h200(200px);
+  } */
