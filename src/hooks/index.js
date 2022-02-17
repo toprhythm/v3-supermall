@@ -9,8 +9,8 @@ export const useLazyData = (apiFn) => {
   const target = ref(null)
   const result = ref([])
   const { stop } = useIntersectionObserver(
-    target,
-    ([{ isIntersecting }], observerElement) => {
+    target, // 监听的目标元素
+    ([{ isIntersecting }], observerElement) => { // 是否进入可视区
       if (isIntersecting) {
         console.log('进入可视区')
         stop()
@@ -19,6 +19,9 @@ export const useLazyData = (apiFn) => {
           result.value = data.result
         })
       }
+    },
+    { // 我们发现，我们向下滚动到home-product,必须要滚动进区域内百分之30以上才会请求到数据，造成了0.x秒的盒子空白，很丑陋，所以配置选项, 相交的的比例大于0(假设0.1)就触发懒加载请求
+      threshold: 0
     }
   )
   // 返回--->数据（dom,后台数据）

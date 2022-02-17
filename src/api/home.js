@@ -18,10 +18,26 @@ export const findBanner = () => {
   return request('/home/banner', 'get')
 }
 
+/**
+ * 获取新鲜好物
+ * @returns Promise
+ */
 export const findNew = () => {
   return request('home/new', 'get')
 }
 
+/**
+ * 获取人气推荐
+ * @returns Promise
+ */
 export const findHot = () => {
   return request('home/hot', 'get')
+}
+
+/**
+ * 获取商品板块
+ * @returns Promise
+ */
+export const findGoods = () => {
+  return request('home/goods', 'get')
 }
