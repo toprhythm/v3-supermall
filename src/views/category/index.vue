@@ -80,7 +80,8 @@ export default {
       })
     }
     watch(() => route.params.id, (newVal) => {
-      newVal && getSubList()
+      // newVal && getSubList()
+      if (newVal && `/category/${newVal}` === route.path) getSubList() // 加上一个严谨判断，在顶级类目下才发请求
     }, { immediate: true })// im: 第一次进入组件也要调用，并非数据变化才调用
 
     return {

@@ -22,7 +22,11 @@ const routes = [
 const router = createRouter({
   // 使用hash的路由模式("localhost:8080/#/")
   history: createWebHashHistory(),
-  routes
+  routes,
+  // 永远切换路由的时候页面都回到顶部
+  scrollBehavior () {
+    return { left: 0, top: 0 } // vue2 { x: 0, y: 0 }， vue3 {left:0, top:0}
+  }
 })
 
 export default router
