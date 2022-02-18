@@ -8,6 +8,7 @@
       <HomeHot />             <!--人气推荐-->
       <HomeBrand />           <!--热门品牌-->
       <HomeProduct />         <!--产品区块-->
+      <HomeSpecial />         <!--最新专题-->
     </div>
   </div>
 </template>
@@ -19,9 +20,10 @@ import HomeNew from './components/home-new'
 import HomeHot from './components/home-hot'
 import HomeBrand from './components/home-brand'
 import HomeProduct from './components/home-product'
+import HomeSpecial from './components/home-special'
 export default {
   name: 'PageHome',
-  components: { HomeProduct, HomeCategory, HomeBanner, HomeNew, HomeHot, HomeBrand }
+  components: { HomeProduct, HomeCategory, HomeBanner, HomeNew, HomeHot, HomeBrand, HomeSpecial }
 
 }
 </script>
