@@ -1,40 +1,22 @@
 <template>
   <div class='xtx-bread'>
-    <div class="xtx-bread-item">
-      <RouterLink to="/">首页</RouterLink>
-    </div>
-    <i class="iconfont icon-angle-right"></i>
-    <div class="xtx-bread-item" v-if="parentName">
-      <RouterLink v-if="parentPath" :to="parentPath">{{parentName}}</RouterLink>
-      <span v-else>{{parentName}}</span>
-    </div>
-    <i v-if="parentName" class="iconfont icon-angle-right"></i>
-    <div class="xtx-bread-item">
-      <span><slot /></span>
-    </div>
+    <slot />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'XtxBread',
-  props: {
-    parentPath: { // 父亲类目的路径
-      type: [String, Object],
-      default: '/'
-    },
-    parentName: { // 父亲类目的名称
-      type: String,
-      default: ''
-    }
-  }
+  name: 'XtxBread'
 }
 </script>
 
-<style scoped lang='less'>
+<style lang='less'>
+  /*去除scoped属性，目的是让样式作用到xtx-bread-item组件*/
   .xtx-bread{
     display: flex;
     padding: 25px 10px;
+    // ul li:last-child {}...先找到父元素,找到所有的子元素,找到最后一个元素，判断是不是li，是就是选中，不是就是无效选中
+    // ul li:last-of-type {} , 找到所有类型为li的元素，选中最后一个
     &-item {
       a {
         color: #666;
@@ -49,6 +31,10 @@ export default {
       margin-left: 5px;
       margin-right: 5px;
       line-height: 22px;
+      /* 用css的形式让面包屑最后一个元素不加 > */
+      /*&:last-child {*/
+      /*  display: none;*/
+      /*}*/
     }
   }
 </style>
