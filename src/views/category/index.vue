@@ -21,21 +21,21 @@
         </ul>
       </div>
       <!-- 分类关联商品 -->
-      <div class="ref-goods">
+      <div class="ref-goods" v-for="sub in subList" :key="sub.id">
         <div class="head">
-          <h3>- 海鲜 -</h3>
+          <h3>- {{sub.name}} -</h3>
           <p class="tag">温暖柔软，品质之选</p>
-          <XtxMore />
+          <XtxMore :path="`/category/sub/${sub.id}`" />
         </div>
         <div class="body">
-          <GoodsItem v-for="i in 5" :key="i" />
+          <GoodsItem v-for="goods in sub.goods" :key="goods.id" :goods="goods" />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 
@@ -43,6 +43,7 @@ import { findBanner } from '../../api/home'
 
 import XtxBread from '../../components/library/xtx-bread'
 import GoodsItem from './components/goods-item'
+import { findTopCategory } from '../../api/category'
 export default {
   name: 'TopCategory',
   components: { XtxBread, GoodsItem },
@@ -68,9 +69,22 @@ export default {
       if (item) cate = item
       return cate
     })
+
+    // 获取各个子类目下推荐商品
+    const subList = ref([])
+    const getSubList = () => {
+      findTopCategory(route.params.id).then(data => {
+        subList.value = data.result.children
+      })
+    }
+    watch(() => route.params.id, (newVal) => {
+      newVal && getSubList()
+    }, { immediate: true })// im: 第一次进入组件也要调用，并非数据变化才调用
+
     return {
       sliders,
-      topCategory
+      topCategory,
+      subList
     }
   }
 }
