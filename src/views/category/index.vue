@@ -4,7 +4,9 @@
       <!-- 面包屑 -->
       <XtxBread>
         <XtxBreadItem to="/">首页</XtxBreadItem>
-        <XtxBreadItem>{{topCategory.name}}</XtxBreadItem>
+        <Transition name="fade-right" mode="out-in"><!--先执行离开动画，在执行进入动画，而不是卡顿执行-->
+          <XtxBreadItem :key="topCategory.id">{{topCategory.name}}</XtxBreadItem> <!--必须加:key="topCategory.id"，动画才能生效，因为diff算法，key变了，组件才会重新渲染-->
+        </Transition>
       </XtxBread>
       <!-- 轮播图 -->
       <XtxCarousel :sliders="sliders" style="height:500px" />

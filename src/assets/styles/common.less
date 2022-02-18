@@ -2,7 +2,7 @@
 * {
   box-sizing: border-box;
  }
- 
+
  html {
    height: 100%;
    font-size: 14px;
@@ -13,7 +13,7 @@
    min-width: 1240px;
    font: 1em/1.4 'Microsoft Yahei', 'PingFang SC', 'Avenir', 'Segoe UI', 'Hiragino Sans GB', 'STHeiti', 'Microsoft Sans Serif', 'WenQuanYi Micro Hei', sans-serif
  }
- 
+
  ul,
  h1,
  h3,
@@ -24,20 +24,20 @@
    padding: 0;
    margin: 0;
  }
- 
+
  a {
    text-decoration: none;
    color: #333;
    outline: none;
  }
- 
+
  i {
    font-style: normal;
  }
- 
+
  input[type="text"],
  input[type="search"],
- input[type="password"], 
+ input[type="password"],
  input[type="checkbox"]{
    padding: 0;
    outline: none;
@@ -47,34 +47,34 @@
      color: #ccc;
    }
  }
- 
+
  img {
    max-width: 100%;
    max-height: 100%;
    vertical-align: middle;
  }
- 
+
  ul {
    list-style: none;
  }
- 
+
  #app {
    background: #f5f5f5;
    user-select: none;
  }
- 
+
  .container {
    width: 1240px;
    margin: 0 auto;
    position: relative;
  }
- 
+
  .ellipsis {
    white-space: nowrap;
    text-overflow: ellipsis;
    overflow: hidden;
  }
- 
+
  .ellipsis-2 {
    word-break: break-all;
    text-overflow: ellipsis;
@@ -83,15 +83,15 @@
    -webkit-line-clamp: 2;
    overflow: hidden;
  }
- 
+
  .fl {
    float: left;
  }
- 
+
  .fr {
    float: right;
  }
- 
+
  .clearfix:after {
    content: ".";
    display: block;
@@ -115,3 +115,31 @@
     }
   }
 }
+
+/*面包屑动画*/
+/* 进入：右侧20px的位移,透明度为0 做过渡0.5s 本来的位置 没有位移，透明度为1 */
+/* 离开：本来位置，没有位移 透明度1 做过渡0.5s 右侧20px的唯一，透明度为0 */
+.fade-right-enter-from,
+.fade-right-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+.fade-right-enter-active,
+.fade-right-leave-active {
+  transition: all 0.5s;
+}
+.fade-right-enter-to,
+.fade-right-leave-from {
+  transform: none;
+  opacity: 1;
+}
+/*.fade-right-leave-from {*/
+
+/*}*/
+/*.fade-right-leave-active {*/
+
+/*}*/
+/*.fade-right-leave-to {*/
+
+/*}*/
+
