@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import { ref, watch } from 'vue'
+import { useVModel } from '@vueuse/core'
 // v-model ====> :modelValue + @update:modelValue
 export default {
   name: 'XtxCheckbox',
@@ -17,17 +17,18 @@ export default {
     }
   },
   setup (props, { emit }) {
-    const checked = ref(false) // 控制两个复选框的显示与隐藏
+    /*
+    * 使用useVModel实现双向数据绑定，
+    * 1. 使用props接受modelValue
+    * 2. 使用useVModel来包装props中的modelValue属性数据
+    * 3. 在使用checked.value的时候就是使用父组件数据
+    * 4. 在使用checked.value = '数据' // 赋值，内部自动触发emit函数而且触发的是emit('update:modelValue', '数据')
+    * */
+    const checked = useVModel(props, 'modelValue', emit)
 
-    const change = () => { // 改变复选框的状态
-      checked.value = !checked.value
-      // 使用emit通知父组件数据的改变
-      emit('update:modelValue', checked.value)
+    const change = () => {
+      checked.value = !checked.value // 你改值就会自动emit()
     }
-
-    watch(() => props.modelValue, () => { // 使用侦听器，得到父组件传递数据，给checked数据
-      checked.value = props.modelValue
-    }, { immediate: true })
 
     return { checked, change }
   }

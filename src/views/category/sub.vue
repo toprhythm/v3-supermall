@@ -3,7 +3,7 @@
     <div class="container">
       <SubBread />        <!--面包屑-->
       <SubFilter />       <!--筛选区-->
-      <XtxCheckbox v-model="isAllChecked">全选</XtxCheckbox>     <!--{{isAllChecked}}测试复选框-->
+      <XtxCheckbox v-model="isAllChecked">全选</XtxCheckbox>{{isAllChecked}}     <!--测试复选框-->
     </div>
   </div>
 </template>
