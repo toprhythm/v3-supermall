@@ -27,7 +27,9 @@ export default {
     const checked = useVModel(props, 'modelValue', emit)
 
     const change = () => {
-      checked.value = !checked.value // 你改值就会自动emit()
+      const newVal = !checked.value
+      checked.value = newVal // 你改值就会自动emit()
+      emit('change', newVal)// 模仿element使用change事件
     }
 
     return { checked, change }
