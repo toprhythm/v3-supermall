@@ -4,14 +4,14 @@
     <div class="item">
       <div class="head">品牌：</div>
       <div class="body">
-        <a @click="filterData.brands.selectedBrand=item.id" :class="{active:item.id===filterData.brands.selectedBrand}" href="javascript:;" v-for="item in filterData.brands" :key="item.id">{{item.name}}</a>
-      </div>
+        <a @click="changeBrand(item.id)" :class="{active:item.id===filterData.brands.selectedBrand}" href="javascript:;" v-for="item in filterData.brands" :key="item.id">{{item.name}}</a>
+      </div><!--filterData.brands.selectedBrand=item.id-->
     </div>
     <div class="item" v-for="item in filterData.saleProperties" :key="item.id">
       <div class="head">{{item.name}}</div>
       <div class="body">
-        <a @click="item.selectedProp=prop.id" :class="{active:prop.id===item.selectedProp}" href="javascript:;" v-for="prop in item.properties" :key="prop.id">{{prop.name}}</a>
-      </div>
+        <a @click="changeProp(item, prop.id)" :class="{active:prop.id===item.selectedProp}" href="javascript:;" v-for="prop in item.properties" :key="prop.id">{{prop.name}}</a>
+      </div><!--item.selectedProp=prop.id-->
     </div>
   </div>
   <!--骨架屏-->
@@ -29,7 +29,7 @@ import { useRoute } from 'vue-router'
 import { findSubCategoryFilter } from '../../../api/category'
 export default {
   name: 'SubFilter',
-  setup () {
+  setup (props, { emit }) {
     const route = useRoute()
     // 监听二级类目的变化获取筛选数据
     const filterData = ref(null)
@@ -58,9 +58,44 @@ export default {
         })
       }
     }, { immediate: true })
+
+    // 获取筛选参数的函数
+    const getFilterParams = () => {
+      const obj = { brandId: null, attrs: [] }
+      // 品牌
+      obj.brandId = filterData.value.brands.selectedBrand
+      // 销售属性
+      filterData.value.saleProperties.forEach(item => {
+        if (item.selectedProp) {
+          const prop = item.properties.find(prop => prop.id === item.selectedProp)
+          obj.attrs.push({ groupName: item.name, propertyName: prop.name })
+        }
+      })
+      // 参考数据 {brandId: '', attrs:[{groupName:'color', propertyName: 'blue'}]}
+      if (obj.attrs.length === 0) obj.attrs = null
+      return obj
+    }
+
+    // 1. 记录当前选择的品牌
+    const changeBrand = (brandId) => {
+      if (filterData.value.selectedBrand === brandId) return // 当你点击的产品等于已经是激活的产品，就阻止
+      filterData.value.brands.selectedBrand = brandId
+      emit('filter-change', getFilterParams())
+    }
+
+    // 2. 已选择的销售属性
+    const changeProp = (item, propId) => { // 当你点击的规格等于已经是激活的规格，就阻止
+      if (item.selectedProp === propId) return
+      item.selectedProp = propId
+      emit('filter-change', getFilterParams())
+    }
+
     return {
       filterData,
-      filterLoading
+      filterLoading,
+      changeBrand,
+      changeProp,
+      getFilterParams
     }
   }
 }
