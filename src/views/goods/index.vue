@@ -16,6 +16,7 @@
         </div>
         <div class="spec">
           <GoodsName :goods="goods" />
+          <GoodsSku :goods="goods" skuId="1369155862131642369" @change="changeSku" />
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -39,17 +40,27 @@
 import GoodsRelevant from './components/goods-relevant'
 import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-name'
+import GoodsSku from './components/goods-sku'
 import { ref, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
 import GoodsImage from './components/goods-image'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName },
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku },
   setup () {
     // 1. 获取商品详情，进行渲染
     const goods = useGoods()
-    return { goods }
+    const changeSku = (sku) => {
+      // console.log(sku)
+      // 修改商品，现价，原价，库存 信息
+      if (sku.skuId) {
+        goods.value.price = sku.price
+        goods.value.oldPrice = sku.oldPrice
+        goods.value.inventory = sku.inventory
+      }
+    }
+    return { goods, changeSku }
   }
 }
 
