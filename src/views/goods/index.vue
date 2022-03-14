@@ -16,7 +16,12 @@
         </div>
         <div class="spec">
           <GoodsName :goods="goods" />
+          <!-- 测试skuId 1369155862131642369 -->
           <GoodsSku :goods="goods" skuId="1369155862131642369" @change="changeSku" />
+          <!-- 数量选择组件 -->
+          <XtxNumbox v-model="num" :max="goods.inventory" label="数量" />
+          <!-- 按钮组件 -->
+          <XtxButton type="primary" size="large" style="margin-top: 20px;">加入购物车</XtxButton>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -25,12 +30,16 @@
       <div class="goods-footer">
         <div class="goods-article">
           <!-- 商品+评价 -->
-          <div class="goods-tabs"></div>
+          <GoodsTabs />
           <!-- 注意事项 -->
-          <div class="goods-warn"></div>
+          <GoodsWarn />
         </div>
         <!-- 24热榜+专题推荐 -->
-        <div class="goods-aside"></div>
+        <div class="goods-aside">
+          <GoodsHot :type="0" />
+          <GoodsHot :type="1" />
+          <GoodsHot :type="2" />
+        </div>
       </div>
     </div>
   </div>
@@ -41,13 +50,16 @@ import GoodsRelevant from './components/goods-relevant'
 import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-name'
 import GoodsSku from './components/goods-sku'
-import { ref, watch, nextTick } from 'vue'
+import GoodsTabs from './components/goods-tabs'
+import GoodsHot from './components/goods-hot'
+import GoodsWarn from './components/goods-warn'
+import { ref, watch, nextTick, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
 import GoodsImage from './components/goods-image'
 export default {
   name: 'XtxGoodsPage',
-  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku },
+  components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
   setup () {
     // 1. 获取商品详情，进行渲染
     const goods = useGoods()
@@ -60,7 +72,14 @@ export default {
         goods.value.inventory = sku.inventory
       }
     }
-    return { goods, changeSku }
+
+    // 提供goods数据给后代（孙级孙孙级）组件使用
+    provide('goods', goods)
+
+    // 选择的数量
+    const num = ref(1)
+
+    return { goods, changeSku, num }
   }
 }
 
