@@ -5,7 +5,7 @@
         <!-- template有一个好处,就是可以包裹一组元素成为一个大元素，但是又不解释成一个元素在源代码中 -->
         <template v-if="profile.token">
           <li><a href="javascript:;"><i class="iconfont icon-user"></i>{{profile.account || 'test周杰伦'}}</a></li>
-          <li><a href="javascript:;">退出登录</a></li>
+          <li><a href="javascript:;" @click="logout()">退出登录</a></li>
         </template>
         <template v-else>
           <li><RouterLink to="/login">请先登录</RouterLink></li>
@@ -23,6 +23,8 @@
 <script>
 import { useStore } from 'vuex'
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import Message from '@/components/library/Message'
 export default {
   name: 'AppTopnav',
   setup () {
@@ -31,8 +33,21 @@ export default {
     const profile = computed(() => {
       return store.state.user.profile
     })
+
+    // 退出登录
+    // 1. 清空本地存储用户信息以及token
+    // 2. 跳转登录页
+    // 3. toast
+    const router = useRouter()
+    const logout = () => {
+      store.commit('user/setUser', {})
+      router.push('/login')
+      Message({ type: 'success', text: '退出成功' })
+    }
+
     return {
-      profile
+      profile,
+      logout
     }
   }
 }

@@ -9,7 +9,8 @@
       </a>
     </div>
     <!-- autocomplete="off" 关闭掉，浏览器自动填充功能，类似百度搜索的模糊列表 -->
-    <Form ref="formRef" class="form" :validation-schema="schema" autocomplete="off" v-slot="{errors}">
+    <Form ref="formRef" class="form" :validation-schema="schema"
+    :autocomplete="off" v-slot="{errors}">
       <template v-if="!isMsgLogin">
         <div class="form-item">
           <div class="input">
@@ -39,7 +40,9 @@
           <div class="input">
             <i class="iconfont icon-code"></i>
             <Field name="code" v-model="form.code" type="text" placeholder="请输入验证码" :class="{error:errors.code}" />
-            <span class="code">发送验证码</span>
+            <span class="code" @click="send">
+              {{time===0?'发送验证码':`${time}秒后发送`}}
+            </span>
           </div>
           <div v-if="errors.code" class="error"><i class="iconfont icon-warning" />{{errors.code}}</div>
         </div>
@@ -67,15 +70,16 @@
 </template>
 
 <script>
-import { reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { Form, Field } from 'vee-validate'
 import schema from '@/utils/vee-validate-schemas'
 
 import Message from '@/components/library/Message'
 
-import { userAccountLogin } from '@/api/user'
+import { userAccountLogin, userMobileLogin, userMobileLoginMsg } from '@/api/user'
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
+import { useIntervalFn } from '@vueuse/shared'
 
 export default {
   name: 'LoginForm',
@@ -153,23 +157,54 @@ export default {
       // 3. 成功  跳转至来源页面或者首页 + 消息提示toast
       // 4. 失败  消息提示
       if (validResult) {
-        const { account, password } = form
-        userAccountLogin({ account, password }).then(data => {
+        if (!isMsgLogin.value) { // 如果不是短信登录
+        // 那就执行账号密码登录
+          const { account, password } = form
+          userAccountLogin({ account, password }).then(data => {
           // 4.1 存储用户信息以及token
-          const { id, account, avatar, mobile, nickname, token } = data.result
-          store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
-          // 4.2 进行跳转
-          router.push(route.query.redirectUrl || '/')
-          // 4.3 消息提示
-          Message({ type: 'success', text: `${nickname}, 登录成功` })
-        }).catch(err => {
+            const { id, account, avatar, mobile, nickname, token } = data.result
+            store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
+            // 4.2 进行跳转
+            router.push(route.query.redirectUrl || '/')
+            // 4.3 消息提示
+            Message({ type: 'success', text: `${nickname}, 账号密码登录成功` })
+          }).catch(err => {
           // 5 登录失败的提示
           // console.log('loginErr: ', err)
           // console.dir(err)
-          if (err.response.data) { // 如果错误信息数据存在,弹出错误信息
-            Message({ type: 'error', text: err.response.data.message || '未知错误, 系统维护中' })
-          }
-        })
+            if (err.response.data) { // 如果错误信息数据存在,弹出错误信息
+              Message({ type: 'error', text: err.response.data.message || '未知错误, 系统维护中' })
+            }
+          })
+        } else { // 如果是短信登录, 后端返回code是null，并且123456的code，后端json报错，无法做下去了
+        // 那就执行短信登录
+          // 1. 发送验证码
+          // 1.1 绑定验证码发送按钮点击事件
+          // 1.2 检验手机号，如果成功发送短信（定义API），开启60s倒计时，不能再次点击，倒计时之后恢复原样
+          // 1.3 如果失败， 失败的校验样式显示出来
+          // 2. 手机号登录
+          // 2.1 准备一个api做账号登录
+          // 2.2 调用api函数
+          // 2.3 成功  跳转至来源页面或者首页 + 消息提示toast
+          // 2.4 失败  消息提示
+          const { mobile, code } = form
+          await userMobileLogin({ mobile, code }).then(data => {
+            // 4.1 存储用户信息以及token
+            const { id, account, avatar, mobile, nickname, token } = data.result
+            store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
+            // 4.2 进行跳转
+            router.push(route.query.redirectUrl || '/')
+            // 4.3 消息提示
+            Message({ type: 'success', text: `${nickname}, 手机号登录成功` })
+          }).catch(err => {
+          // 5 登录失败的提示
+          // console.log('loginErr: ', err)
+          // console.dir(err)
+            if (err.response.data) { // 如果错误信息数据存在,弹出错误信息
+              Message({ type: 'error', text: err.response.data.message || '未知错误, 系统维护中' })
+            }
+          })
+        }
       }
 
       // 拿到当前实例, 不建议这么用
@@ -178,7 +213,39 @@ export default {
       // proxy.$message({ text: '111' })
     }
 
-    return { isMsgLogin, form, schema: mySchema, formRef, login }
+    // 点击按钮发送短信
+    // pause暂停，resume开启，回调函数，执行间隔，false，发送成功后在开启定时器
+    const time = ref(0)
+    const { pause, resume } = useIntervalFn(() => {
+      time.value--
+      if (time.value <= 0) {
+        pause()
+      }
+    }, 1000, false) // vueuse库的定时器api
+    onMounted(() => {
+      pause()
+    })
+
+    // 发送短信 测试：136 6666 6666
+    const send = async () => {
+      const valid = mySchema.mobile(form.mobile)
+      // console.log(valid) // login-form.vue?58a9:198 请输入手机号
+      if (valid === true) {
+        // 通过
+        if (time.value === 0) {
+          await userMobileLoginMsg(form.mobile)
+          Message({ type: 'success', text: '发送成功' })
+          time.value = 60
+          resume()
+        }
+      } else {
+        // 失败
+        // 没通过,使用vee错误函数显示错误信息, setFieldError(字段，错误信息)
+        formRef.value.setFieldError('mobile', valid)
+      }
+    }
+
+    return { isMsgLogin, form, schema: mySchema, formRef, login, send, time }
   }
 }
 </script>
