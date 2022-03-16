@@ -17,7 +17,10 @@
         <div class="spec">
           <GoodsName :goods="goods" />
           <!-- 测试skuId 1369155862131642369 -->
-          <GoodsSku :goods="goods" skuId="1369155862131642369" @change="changeSku" />
+          <!-- v1.0 是写死的，其他商品都看不了了 -->
+          <!-- <GoodsSku :goods="goods" skuId="1369155862131642369" @change="changeSku" /> -->
+          <!-- v2.0 取skus里的第一个元素的skuid -->
+          <GoodsSku :goods="goods" :skuId="goods.skus[0].id" @change="changeSku" />
           <!-- 数量选择组件 -->
           <XtxNumbox v-model="num" :max="goods.inventory" label="数量" />
           <!-- 按钮组件 -->
@@ -75,6 +78,7 @@ export default {
 
     // 提供goods数据给后代（孙级孙孙级）组件使用
     provide('goods', goods)
+    // console.log('goods', goods)
 
     // 选择的数量
     const num = ref(1)

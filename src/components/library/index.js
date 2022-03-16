@@ -5,6 +5,8 @@
 
 import defaultImg from '@/assets/images/200.png'
 
+import Mesaage from './Message'
+
 // import XtxSkeleton from './xtx-skeleton.vue'
 // import XtxCarousel from './xtx-carousel.vue'
 // import XtxMore from './xtx-more.vue'
@@ -37,6 +39,9 @@ export default {
 
     // 定义指令
     defineDirective(app)
+
+    // 定义一个原型函数
+    app.config.globalProperties.$message = Mesaage
   }
 }
 
