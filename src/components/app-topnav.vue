@@ -8,7 +8,8 @@
           <li><a href="javascript:;" @click="logout()">退出登录</a></li>
         </template>
         <template v-else>
-          <li><RouterLink to="/login">请先登录</RouterLink></li>
+          <!-- <li><RouterLink to="/login">请先登录</RouterLink></li> -->
+          <li><a @click="toLogin()">请先登录</a></li>
           <li><a href="javascript:;">免费注册</a></li>
         </template>
         <li><a href="javascript:;">我的订单</a></li>
@@ -45,9 +46,17 @@ export default {
       Message({ type: 'success', text: '退出成功' })
     }
 
+    // 去登录页
+    const fullPath = encodeURIComponent(router.currentRoute.value.fullPath)
+    // 在登录页面存储回调地址给vuex
+    const toLogin = () => {
+      router.replace('/login?redirectUrl=' + fullPath)
+    }
+
     return {
       profile,
-      logout
+      logout,
+      toLogin
     }
   }
 }

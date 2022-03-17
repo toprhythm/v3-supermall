@@ -5,6 +5,7 @@ const Layout = () => import('@/views/Layout')
 const Home = () => import('@/views/home/index')
 const Goods = () => import('@/views/goods/index')
 const Login = () => import('@/views/login/index')
+const LoginCallBack = () => import('@/views/login/callback')
 
 // 路由规则
 const routes = [
@@ -21,6 +22,10 @@ const routes = [
   {
     path: '/login',
     component: Login
+  },
+  {
+    path: '/login/callback',
+    component: LoginCallBack
   }
 ]
 
