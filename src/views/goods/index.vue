@@ -24,7 +24,7 @@
           <!-- 数量选择组件 -->
           <XtxNumbox v-model="num" :max="goods.inventory" label="数量" />
           <!-- 按钮组件 -->
-          <XtxButton type="primary" size="large" style="margin-top: 20px;">加入购物车</XtxButton>
+          <XtxButton @click="insertCart()" type="primary" size="large" style="margin-top: 20px;">加入购物车</XtxButton>
         </div>
       </div>
       <!-- 商品推荐 -->
@@ -60,6 +60,8 @@ import { ref, watch, nextTick, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { findGoods } from '@/api/product'
 import GoodsImage from './components/goods-image'
+import { useStore } from 'vuex'
+import Message from '@/components/library/Message'
 export default {
   name: 'XtxGoodsPage',
   components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
@@ -73,6 +75,9 @@ export default {
         goods.value.price = sku.price
         goods.value.oldPrice = sku.oldPrice
         goods.value.inventory = sku.inventory
+
+        // ???
+        currSku.value = sku
       }
     }
 
@@ -83,7 +88,41 @@ export default {
     // 选择的数量
     const num = ref(1)
 
-    return { goods, changeSku, num }
+    // 加入购物车方法
+    const store = useStore()
+    const currSku = ref(null)
+    const insertCart = () => {
+    // 约定加入购物车字段必须和后端保持一致
+    // 他们是：id skuId name picture price nowPrice count attrsText selected stock isEffective
+    // 真正在vuex里完成 store/cart.js
+    // sku选择完整才可以加购
+    // 这里怎么测试，先打开f12应用：点击 鞋子 蓝色 37码加购，看storage，点击黑色40码加购，再点击回蓝色37码加购，查看同款sku商品是否能够做到仅数量叠加，不增加item
+      if (currSku.value && currSku.value.skuId) {
+        const { skuId, specsText: attrsText, inventory: stock } = currSku.value
+        const { id, name, price, mainPictures } = goods.value
+        console.log('mainPictures=', mainPictures)
+        store.dispatch('cart/insertCart', {
+          // name picture price nowPrice count attrsText selected stock isEffective
+          skuId,
+          attrsText,
+          stock,
+          id,
+          name,
+          price,
+          nowPrice: price,
+          picture: mainPictures[0],
+          selected: true,
+          count: num.value,
+          isEffective: true
+        }).then(() => {
+          Message({ type: 'success', text: '加入购物车成功' })
+        })
+      } else {
+        Message({ type: 'error', text: '请选择完整规格' })
+      }
+    }
+
+    return { goods, changeSku, num, insertCart }
   }
 }
 
