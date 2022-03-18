@@ -23,6 +23,29 @@ export default {
       // js浮点计算不精确： 1.1 * 3 === 3.300000 怎么办？
       // 成100倍变整数，做整数/
       return getters.validList.reduce((p, c) => p + parseInt((c.nowPrice * 100)) * c.count / 100, 0)
+    },
+    // 无效商品列表
+    invalidList (state, getters) {
+      // 如果商品库存小于等于零，或者商品是无效的商品
+      return state.list.filter(goods => goods.stock <= 0 || !goods.isEffective)
+    },
+    // 已选商品列表
+    selectedList (state, getters) {
+      // 当你的商品的isslected为true时加入已选商品列表
+      return getters.validList.filter(item => item.selected)
+    },
+    // 已选商品总件数
+    selectedTotal (state, getters) {
+      return getters.selectedList.reduce((p, c) => p + c.count, 0)
+    },
+    // 已选商品总金额 round：四舍五入
+    selectedAmount (state, getters) {
+      return getters.selectedList.reduce((p, c) => p + Math.round((c.nowPrice * 100)) * c.count / 100, 0)
+    },
+    // 是否全选
+    isCheckAll (state, getters) {
+      // 有效商品列表的长度不能为0，有效商品列表的length和已选商品列表的length相等时，才是全选为true，否则false
+      return getters.validList.length !== 0 && getters.selectedList.length === getters.validList.length
     }
   },
   mutations: {
@@ -59,6 +82,11 @@ export default {
           updateGoods[key] = payload[key]
         }
       }
+    },
+    // 删除购物车商品
+    deleteCart (state, payload) {
+      const index = state.list.findIndex(item => item.skuId === payload)
+      state.list.splice(index, 1)
     }
   },
   actions: {
@@ -100,6 +128,36 @@ export default {
             // 调用resolve代表操作成功
             resolve()
           })
+        }
+      })
+    },
+    // 删除购物车
+    deleteCart (store, payload) {
+      // 单个商品删除，payload 现在就是skuId
+      return new Promise((resolve, reject) => {
+        if (store.rootState.user.profile.token) {
+          // TODO 1. 已登录
+
+        } else {
+          // 2. 未登录
+          // 单个商品删除，payload 现在就是skuId
+          store.commit('deleteCart', payload)
+          resolve() // 传空代表成功即可
+        }
+      })
+    },
+    // 修改购物车（选中状态，数量）
+    updateCart (store, payload) {
+      // payload必须有skuId，可能：selected count
+      return new Promise((resolve, reject) => {
+        if (store.rootState.user.profile.token) {
+          // TODO 1. 已登录
+
+        } else {
+          // 2. 未登录
+          // 单个商品删除，payload 现在就是skuId
+          store.commit('updateCart', payload)
+          resolve() // 传空代表成功即可
         }
       })
     }
