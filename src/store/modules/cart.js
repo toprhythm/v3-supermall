@@ -90,6 +90,21 @@ export default {
     }
   },
   actions: {
+    // 全选与取消全选
+    checkAllCart (store, selected) {
+      return new Promise((resolve, reject) => {
+        if (store.rootState.user.profile.token) {
+          // TODO 1. 已登录
+
+        } else {
+          // 2. 未登录
+          store.getters.validList.forEach(item => {
+            store.commit('updateCart', { skuId: item.skuId, selected })
+          })
+          resolve() // 传空代表成功即可
+        }
+      })
+    },
     // 加入购物车
     insertCart (store, payload) {
       //
