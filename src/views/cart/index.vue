@@ -34,7 +34,7 @@
                   <div>
                     <p class="name ellipsis">{{ goods.name }}</p>
                     <!-- 选择规格组件 -->
-                    <CartSku :attrs-text="goods.attrsText" :skuId="goods.skuId" />
+                    <CartSku @change="$event => updateCartSku(goods.skuId, $event)" :attrs-text="goods.attrsText" :skuId="goods.skuId" />
                   </div>
                 </div>
               </td>
@@ -155,7 +155,12 @@ export default {
       store.dispatch('cart/updateCart', { skuId, count })
     }
 
-    return { CheckOne, checkAll, deleteCart, batchDeleteCart, updateCount }
+    // 修改规格
+    const updateCartSku = (oldSkuId, newSku) => {
+      store.dispatch('cart/updateCartSku', { oldSkuId, newSku })
+    }
+
+    return { CheckOne, checkAll, deleteCart, batchDeleteCart, updateCount, updateCartSku }
   }
 }
 </script>

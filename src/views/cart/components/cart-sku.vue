@@ -6,8 +6,8 @@
     </div>
      <div class="layer" v-if="visible">
       <div v-if="!goods" class="loading"></div>
-      <GoodsSku v-if="goods"  :skuId="skuId" :goods="goods" />
-      <XtxButton v-if="goods" type="primary" size="mini" style="margin-left:60px">确认</XtxButton>
+      <GoodsSku @change="changeSku" v-if="goods"  :skuId="skuId" :goods="goods" />
+      <XtxButton @click="submit()" v-if="goods" type="primary" size="mini" style="margin-left:60px">确认</XtxButton>
     </div>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default {
       default: ''
     }
   },
-  setup (props) {
+  setup (props, { emit }) {
     const visible = ref(false)
     const goods = ref(null)
     const show = () => {
@@ -52,7 +52,23 @@ export default {
     onClickOutside(target, () => {
       hide()
     })
-    return { visible, toggle, target, goods }
+
+    // 选择SKU时候触发
+    const currSku = ref(null)
+    const changeSku = (sku) => {
+      currSku.value = sku
+    }
+    // 点击确认的时候，提交sku信息给购物车组件
+    const submit = () => {
+      console.log('submit')
+      // 给购物车组件数据的前提：有sku信息，sku信息完整，sku中的skuId不能现有props.skuId一样
+      if (currSku.value && currSku.value.skuId && currSku.value.skuId !== props.skuId) {
+        emit('change', currSku.value)
+        hide()
+      }
+    }
+
+    return { visible, toggle, target, goods, changeSku, submit }
   }
 }
 </script>
