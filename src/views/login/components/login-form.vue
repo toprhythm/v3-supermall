@@ -172,10 +172,14 @@ export default {
           // 4.1 存储用户信息以及token
             const { id, account, avatar, mobile, nickname, token } = data.result
             store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
-            // 4.2 进行跳转
-            router.push(route.query.redirectUrl || '/')
-            // 4.3 消息提示
-            Message({ type: 'success', text: `${nickname}, 账号密码登录成功` })
+
+            // 合并购物车成功在跳转
+            store.dispatch('cart/mergeCart').then(() => {
+              // 4.2 进行跳转
+              router.push(route.query.redirectUrl || '/')
+              // 4.3 消息提示
+              Message({ type: 'success', text: `${nickname}, 账号密码登录成功` })
+            })
           }).catch(err => {
           // 5 登录失败的提示
           // console.log('loginErr: ', err)
@@ -200,10 +204,13 @@ export default {
             // 4.1 存储用户信息以及token
             const { id, account, avatar, mobile, nickname, token } = data.result
             store.commit('user/setUser', { id, account, avatar, mobile, nickname, token })
-            // 4.2 进行跳转
-            router.push(route.query.redirectUrl || '/')
-            // 4.3 消息提示
-            Message({ type: 'success', text: `${nickname}, 手机号登录成功` })
+            // 合并购物车成功在跳转
+            store.dispatch('cart/mergeCart').then(() => {
+              // 4.2 进行跳转
+              router.push(route.query.redirectUrl || '/')
+              // 4.3 消息提示
+              Message({ type: 'success', text: `${nickname}, 手机号登录成功` })
+            })
           }).catch(err => {
           // 5 登录失败的提示
           // console.log('loginErr: ', err)

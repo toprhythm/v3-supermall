@@ -19,3 +19,14 @@ export const getNewCartGoods = (skuId) => {
 export const getSpecsAndSkus = (skuId) => {
   return request(`/goods/sku/${skuId}`, 'get')
 }
+
+/**
+ * 合并本地购物车
+ * @param {Array<object>} cartList - 本地购物车数组
+ * @param {String} object.skuId - 商品SKUID
+ * @param {Boolean} object.selected - 是否选中
+ * @param {Integer} object.count - 数量
+ */
+export const mergeLocalCart = (cartList) => {
+  return request('/member/cart/merge', 'post', cartList)
+}
