@@ -90,6 +90,22 @@ export default {
     }
   },
   actions: {
+    // 批量删除选中商品
+    batchDeleteCart (store, isClear) {
+      return new Promise((resolve, reject) => {
+        if (store.rootState.user.profile.token) {
+          // 登录 TODO
+        } else {
+          // 本地
+          // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
+          // isClear为true删除失效商品列表，否则删除选中商品列表
+          store.getters[isClear ? 'invalidList' : 'selectedList'].forEach(item => {
+            store.commit('deleteCart', item.skuId)
+          })
+          resolve()
+        }
+      })
+    },
     // 全选与取消全选
     checkAllCart (store, selected) {
       return new Promise((resolve, reject) => {
