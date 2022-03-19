@@ -1,4 +1,4 @@
-import { deleteCart, findCartList, getNewCartGoods, insertCart, mergeLocalCart } from '@/api/cart'
+import { deleteCart, findCartList, getNewCartGoods, insertCart, mergeLocalCart, updateCart } from '@/api/cart'
 
 // 购物⻋状态
 export default {
@@ -245,8 +245,14 @@ export default {
       // payload必须有skuId，可能：selected count
       return new Promise((resolve, reject) => {
         if (store.rootState.user.profile.token) {
-          // TODO 1. 已登录
-
+          // 登录 TODO
+          const goods = { skuId: payload.skuId, selected: payload.selected, count: payload.count }
+          updateCart(goods).then(() => {
+            return findCartList()
+          }).then((data) => {
+            store.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 2. 未登录
           // 单个商品删除，payload 现在就是skuId
