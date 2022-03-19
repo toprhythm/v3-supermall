@@ -1,4 +1,4 @@
-import { getNewCartGoods, mergeLocalCart } from '@/api/cart'
+import { findCartList, getNewCartGoods, insertCart, mergeLocalCart } from '@/api/cart'
 
 // 购物⻋状态
 export default {
@@ -166,8 +166,14 @@ export default {
       //
       return new Promise((resolve, reject) => {
         if (store.rootState.user.profile.token) {
-          // TODO 1. 已登录
-
+          // 登录 TODO
+          const goods = { skuId: payload.skuId, count: payload.count }
+          insertCart(goods).then(() => {
+            return findCartList()
+          }).then((data) => {
+            store.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 2. 未登录
           store.commit('insertCart', payload)
@@ -180,6 +186,9 @@ export default {
       return new Promise((resolve, reject) => {
         if (store.rootState.user.profile.token) {
           // TODO已登录
+          findCartList().then(data => {
+            store.commit('setCart', data.result)
+          })
         } else {
           // 未登录
           // 同时发送请求，有几件商品，发几个请求，等所有请求成功，一并修改本地数据
