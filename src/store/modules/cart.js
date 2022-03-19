@@ -1,4 +1,4 @@
-import { findCartList, getNewCartGoods, insertCart, mergeLocalCart } from '@/api/cart'
+import { deleteCart, findCartList, getNewCartGoods, insertCart, mergeLocalCart } from '@/api/cart'
 
 // 购物⻋状态
 export default {
@@ -135,6 +135,14 @@ export default {
       return new Promise((resolve, reject) => {
         if (store.rootState.user.profile.token) {
           // 登录 TODO
+          // 得到需要删除的商品列表（失效，选中）的skuId集合
+          const ids = store.getters[isClear ? 'invalidList' : 'selectedList'].map(item => item.skuId)
+          deleteCart(ids).then(() => {
+            return findCartList()
+          }).then((data) => {
+            store.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 本地
           // 1. 获取选中商品列表，进行遍历调用deleteCart mutataions函数
@@ -216,8 +224,14 @@ export default {
       // 单个商品删除，payload 现在就是skuId
       return new Promise((resolve, reject) => {
         if (store.rootState.user.profile.token) {
-          // TODO 1. 已登录
-
+          // 登录 TODO
+          // deleteCart([skuId]).then(() => {
+          deleteCart([payload]).then(() => {
+            return findCartList()
+          }).then((data) => {
+            store.commit('setCartList', data.result)
+            resolve()
+          })
         } else {
           // 2. 未登录
           // 单个商品删除，payload 现在就是skuId
