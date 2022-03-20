@@ -11,7 +11,8 @@
         <span class="icon iconfont icon-queren2"></span>
         <div class="tip">
           <p>订单提交成功！请尽快完成支付。</p>
-          <p>支付还剩 <span>24分59秒</span>, 超时后将取消订单</p>
+          <p v-if="order.countdown>-1">支付还剩 <span>{{timeText}}</span>, 超时后将取消订单</p>
+          <p v-else>订单已经超时</p>
         </div>
         <div class="amount">
           <span>应付总额：</span>
@@ -40,8 +41,12 @@
 </template>
 <script>
 import { useRoute } from 'vue-router'
+// import { onUnmounted, ref } from 'vue'
 import { ref } from 'vue'
 import { findOrder } from '@/api/order'
+import { usePayTime } from '@/hooks'
+// import { useIntervalFn } from '@vueuse/shared'
+// import dayjs from 'dayjs'
 export default {
   name: 'XtxPayPage',
   setup () {
@@ -52,9 +57,29 @@ export default {
     findOrder(route.query.id).then(data => {
       order.value = data.result
       // 后端提供countdown倒计时计数
+      if (data.result.countdown > -1) {
+        start(data.result.countdown)
+      }
     })
+
+    // // 倒计时函数
+    // const time = ref(0)
+    // const timeText = ref('')
+    // const { pause, resume } = useIntervalFn(() => {
+    //   time.value--
+    //   timeText.value = dayjs.unix(time.value).format('mm分ss秒')
+    //   console.log('time.value=', time.value)
+    //   if (time.value <= 0) pause()
+    // }, 1000, false)
+    // onUnmounted(() => {
+    //   pause()
+    // })
+
+    const { start, timeText } = usePayTime()
+
     return {
-      order
+      order,
+      timeText
     }
   }
 }
