@@ -8,7 +8,7 @@
       </XtxBread>
       <div class="wrapper" v-if="order">
         <!-- 收货地址 -->
-        <checkout-address :list="order.userAddresses" />
+        <checkout-address @change="changeAdress" :list="order.userAddresses" />
         <!-- 商品信息 -->
         <h3 class="box-title">商品信息</h3>
         <div class="box-body">
@@ -67,7 +67,7 @@
         </div>
         <!-- 提交订单 -->
         <div class="submit">
-          <XtxButton type="primary">提交订单</XtxButton>
+          <XtxButton @click="submitOrder" type="primary">提交订单</XtxButton>
         </div>
       </div>
     </div>
@@ -75,20 +75,55 @@
 </template>
 <script>
 import CheckoutAddress from './components/checkout-address.vue'
-import { findCheckoutInfo } from '@/api/order'
-import { ref } from 'vue'
+import { createOrder, findCheckoutInfo } from '@/api/order'
+import { reactive, ref } from 'vue'
+import Message from '@/components/library/Message'
+import { useRouter } from 'vue-router'
 export default {
   name: 'XtxPayCheckoutPage',
   components: {
     CheckoutAddress
   },
+  // 推荐这样写,只要你emit过,为了代码可读
+  emits: ['change'],
   setup () {
     // 结算功能-生成订单信息
     const order = ref(null)
     findCheckoutInfo().then((data) => {
       order.value = data.result
+      reqParams.goods = data.result.goods.map(({ skuId, count }) => ({ skuId, count }))
     })
-    return { order }
+
+    // 结算功能-提交订单-提交信息
+    const reqParams = reactive({
+      deliveryTimeType: 1,
+      payType: 1,
+      payChannel: 1,
+      buyerMessage: '',
+      goods: [],
+      addressId: null
+    })
+
+    // 提交订单需要收货地址ID
+    // const addressId = ref(null)
+
+    // 收货地址id
+    const changeAdress = (id) => {
+      reqParams.addressId = id
+      // console.log('addrId=', id)
+    }
+
+    // 提交订单
+    const router = useRouter()
+    const submitOrder = () => {
+      if (!reqParams.addressId) return Message({ text: '请选择收货地址' })
+      createOrder(reqParams).then(data => {
+        Message({ text: '提交订单成功' })
+        router.push({ path: '/member/pay', query: { id: data.result.id } })
+      })
+    }
+
+    return { order, changeAdress, reqParams, submitOrder }
   }
 }
 </script>
